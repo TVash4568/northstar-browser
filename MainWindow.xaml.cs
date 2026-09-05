@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Win32;
@@ -14,7 +16,11 @@ namespace NorthstarBrowser;
 
 public partial class MainWindow : Window
 {
-    private readonly ObservableCollection<BrowserSession> _sessions = [];
+    private readonly BrowserProfile _profile = new() { Id = "default", Name = "Default" };
+    private ObservableCollection<BrowserSession> _sessions => _profile.Workspaces;
+    private readonly TabLifecycleManager _tabLifecycle = new();
+    private readonly NewtonDataStore _dataStore = new();
+    private readonly DispatcherTimer _recoveryTimer = new() { Interval = TimeSpan.FromSeconds(15) };
     private Task<CoreWebView2Environment>? _environmentTask;
     private BrowserTab? _previousTab;
     private BrowserTab? _secondaryTab;
@@ -28,8 +34,54 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         SessionList.ItemsSource = _sessions;
-        Loaded += async (_, _) => await CreateSessionAsync("Start");
+        SearchProviderBox.ItemsSource = NavigationService.SearchProviders;
+        SearchProviderBox.SelectedItem = "DuckDuckGo";
+        _dataStore.Initialise();
+        Loaded += async (_, _) => await RestoreOrStartAsync();
+        Closing += OnClosing;
+        _recoveryTimer.Tick += (_, _) => SaveRecoverySnapshot(false);
+        _recoveryTimer.Start();
         PreviewKeyDown += HandleShortcuts;
+    }
+
+    private async Task RestoreOrStartAsync()
+    {
+        IReadOnlyList<RecoveryTab> recovery = _dataStore.WasPreviousShutdownClean ? [] : _dataStore.LoadRecoveryTabs();
+        if (recovery.Count == 0)
+        {
+            await CreateSessionAsync("Start");
+            return;
+        }
+
+        foreach (var workspace in recovery.GroupBy(x => new { x.WorkspacePosition, x.WorkspaceName }).OrderBy(x => x.Key.WorkspacePosition))
+        {
+            var session = new BrowserSession { Name = workspace.Key.WorkspaceName };
+            _sessions.Add(session);
+            SessionList.SelectedItem = session;
+            foreach (var saved in workspace.OrderBy(x => x.TabPosition))
+            {
+                if (!Uri.TryCreate(saved.Url, UriKind.Absolute, out var uri)) continue;
+                await CreateTabAsync(session, uri);
+                if (CurrentTab is { } tab) { tab.Title = saved.Title; tab.Group = saved.Group; }
+            }
+        }
+    }
+
+    private void SaveRecoverySnapshot(bool cleanShutdown)
+    {
+        var snapshot = _sessions.SelectMany((workspace, workspaceIndex) =>
+            workspace.Tabs.Select((tab, tabIndex) => new RecoveryTab(
+                workspaceIndex, workspace.Name, tabIndex,
+                tab.View.CoreWebView2?.Source ?? tab.View.Source?.AbsoluteUri ?? "https://duckduckgo.com",
+                tab.Title, tab.Group)));
+        _dataStore.SaveRecoverySnapshot(snapshot, cleanShutdown);
+    }
+
+    private void OnClosing(object? sender, CancelEventArgs e)
+    {
+        _recoveryTimer.Stop();
+        SaveRecoverySnapshot(true);
+        _dataStore.Dispose();
     }
 
     private async Task CreateSessionAsync(string name)
@@ -89,7 +141,9 @@ public partial class MainWindow : Window
     private Task<CoreWebView2Environment> GetEnvironmentAsync() =>
         _environmentTask ??= CoreWebView2Environment.CreateAsync(
             browserExecutableFolder: null,
-            userDataFolder: null,
+            userDataFolder: Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Newton", "Profiles", _profile.Id, "WebView2"),
             options: new CoreWebView2EnvironmentOptions
             {
                 AreBrowserExtensionsEnabled = false
@@ -142,24 +196,28 @@ public partial class MainWindow : Window
     private void Reload_Click(object sender, RoutedEventArgs e) => CurrentTab?.View.Reload();
     private void Go_Click(object sender, RoutedEventArgs e) => Navigate();
     private void AddressBox_KeyDown(object sender, KeyEventArgs e) { if (e.Key == Key.Enter) Navigate(); }
-    private void Navigate()
+    private void Search_Click(object sender, RoutedEventArgs e) => Search();
+    private void SearchBox_KeyDown(object sender, KeyEventArgs e) { if (e.Key == Key.Enter) Search(); }
+
+    private void Search()
     {
-        if (RunCommand(AddressBox.Text)) return;
-        if (CurrentTab is not null) CurrentTab.View.Source = NavigationService.Resolve(AddressBox.Text);
+        var query = SearchBox.Text.Trim();
+        if (query.Length == 0 || CurrentTab is null) return;
+        var provider = SearchProviderBox.SelectedItem as string ?? "DuckDuckGo";
+        CurrentTab.View.Source = NavigationService.CreateSearch(provider, query);
     }
 
-    private bool RunCommand(string input)
+    private void Navigate()
     {
-        if (!input.TrimStart().StartsWith('>')) return false;
-        switch (input.Trim().ToLowerInvariant())
+        if (CurrentTab is null) return;
+        if (NavigationService.TryResolveAddress(AddressBox.Text, out var destination) && destination is not null)
         {
-            case ">split": SplitToggle.IsChecked = !(SplitToggle.IsChecked ?? false); SplitToggle_Click(this, new RoutedEventArgs()); break;
-            case ">group": GroupTab_Click(this, new RoutedEventArgs()); break;
-            case ">theme": Theme_Click(this, new RoutedEventArgs()); break;
-            case ">layout": Customise_Click(this, new RoutedEventArgs()); break;
-            default: MessageBox.Show("Commands: >split, >group, >theme, >layout", "Newton commands"); break;
+            CurrentTab.View.Source = destination;
+            return;
         }
-        return true;
+        MessageBox.Show(
+            "Enter a valid website address here. Use the separate search box to search the web.",
+            "Invalid web address", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void SessionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -173,11 +231,7 @@ public partial class MainWindow : Window
     {
         if (CurrentTab is not { } tab) return;
 
-        if (_previousTab is { } previous && previous != tab && previous != _secondaryTab && previous.View.CoreWebView2 is not null)
-            await previous.View.CoreWebView2.TrySuspendAsync();
-
-        if (tab.View.CoreWebView2 is { IsSuspended: true } activeCore)
-            activeCore.Resume();
+        await _tabLifecycle.ActivateAsync(tab, _previousTab, _secondaryTab);
 
         if (_secondaryTab == tab && SplitToggle.IsChecked == true)
         {
@@ -332,8 +386,9 @@ public partial class MainWindow : Window
         }
         if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
         if (e.Key == Key.L) { AddressBox.Focus(); AddressBox.SelectAll(); e.Handled = true; }
+        if (e.Key == Key.E) { SearchBox.Focus(); SearchBox.SelectAll(); e.Handled = true; }
         if (e.Key == Key.T && CurrentSession is not null) { await CreateTabAsync(CurrentSession, new Uri("https://duckduckgo.com")); e.Handled = true; }
-        if (e.Key == Key.K) { AddressBox.Text = ">"; AddressBox.Focus(); AddressBox.CaretIndex = 1; e.Handled = true; }
+        if (e.Key == Key.K) { SearchBox.Focus(); SearchBox.SelectAll(); e.Handled = true; }
         if (e.Key == Key.G && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) { GroupTab_Click(this, new RoutedEventArgs()); e.Handled = true; }
         if (e.Key == Key.S && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) { SplitToggle.IsChecked = !(SplitToggle.IsChecked ?? false); SplitToggle_Click(this, new RoutedEventArgs()); e.Handled = true; }
         if (e.Key == Key.D && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) { Theme_Click(this, new RoutedEventArgs()); e.Handled = true; }
