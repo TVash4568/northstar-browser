@@ -1,6 +1,6 @@
-# Northstar Browser (temporary codename)
+# Newton Browser
 
-Northstar is an experimental Windows browser organised around task sessions instead of an endless row of tabs. It uses Microsoft's Evergreen WebView2 runtime so the rendering engine receives Chromium security updates independently of the application.
+Newton is an experimental Windows browser organised around task sessions instead of an endless row of tabs. It uses Microsoft's Evergreen WebView2 runtime so the rendering engine receives Chromium security updates independently of the application.
 
 Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multiprocess execution and site isolation—is documented in `ARCHITECTURE.md`.
 
@@ -44,7 +44,7 @@ See `COMPATIBILITY.md` for the web-platform matrix and `ENTERPRISE.md` for the e
 
 ## Important security status
 
-This is pre-release software. It has not undergone independent security review. The bundled blocklist is intentionally small in the first alpha; automatic list updates, per-site exceptions, signed automatic application updates, private sessions, downloads UI, history controls and accessibility testing remain incomplete. Fingerprinting protection is mitigation rather than anonymity because WebView2 controls the underlying engine. Engine updates are rapid through Evergreen WebView2, but Northstar application updates are not yet automatic or signed. Do not use this alpha for banking, healthcare, passwords or other sensitive activity.
+This is pre-release software. It has not undergone independent security review. The bundled blocklist is intentionally small in the first alpha; automatic list updates, per-site exceptions, signed automatic application updates, private sessions, downloads UI, history controls and accessibility testing remain incomplete. Fingerprinting protection is mitigation rather than anonymity because WebView2 controls the underlying engine. Engine updates are rapid through Evergreen WebView2, but Newton application updates are not yet automatic or signed. Do not use this alpha for banking, healthcare, passwords or other sensitive activity.
 
 ## Build
 
@@ -59,8 +59,8 @@ Create a tagged GitHub release (`v0.1.0`) to run the Windows build workflow. Rel
 
 ## Performance status
 
-Northstar is designed for low shell overhead, but no performance superiority is claimed before repeatable Windows benchmarks are completed. See `PERFORMANCE.md` for the acceptance criteria.
+Newton is designed for low shell overhead, but no performance superiority is claimed before repeatable Windows benchmarks are completed. See `PERFORMANCE.md` for the acceptance criteria.
 
 ## Licence
 
-MPL-2.0. The permanent product name and visual identity are intentionally not assigned yet.
+MPL-2.0. Newton is the selected product name, subject to formal trademark clearance before commercial release.
