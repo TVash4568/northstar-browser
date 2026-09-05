@@ -50,13 +50,14 @@
 
     <Grid Grid.Column="1">
       <Grid.RowDefinitions>
-        <RowDefinition Height="56" />
+        <RowDefinition Height="96" />
         <RowDefinition Height="48" />
         <RowDefinition Height="*" />
       </Grid.RowDefinitions>
 
       <Border x:Name="ChromeBar" Background="White" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1">
         <Grid Margin="14,8">
+          <Grid.RowDefinitions><RowDefinition Height="40"/><RowDefinition Height="40"/></Grid.RowDefinitions>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" />
@@ -84,6 +85,18 @@
           <Button Grid.Column="8" Click="Screenshot_Click" Content="⌗" Style="{StaticResource NavButton}" ToolTip="Save viewport screenshot" />
           <Button Grid.Column="9" Click="GeneratePassword_Click" Content="Key" FontSize="10" Style="{StaticResource NavButton}" ToolTip="Generate a strong password" />
           <Button Grid.Column="10" Click="DeveloperTools_Click" Content="{}{ }" FontSize="11" Style="{StaticResource NavButton}" ToolTip="Developer tools (F12)" />
+          <Border Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="8" Margin="10,4,0,0"
+                  Background="#EEF2FF" CornerRadius="13" BorderBrush="#C7D2FE" BorderThickness="1">
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition Width="135"/><ColumnDefinition Width="*"/><ColumnDefinition Width="70"/></Grid.ColumnDefinitions>
+              <ComboBox x:Name="SearchProviderBox" Margin="8,4" BorderThickness="0" Background="Transparent"
+                        VerticalContentAlignment="Center" ToolTip="Choose search provider" />
+              <TextBox x:Name="SearchBox" Grid.Column="1" Margin="8,2" BorderThickness="0" Background="Transparent"
+                       VerticalContentAlignment="Center" FontSize="14" KeyDown="SearchBox_KeyDown"
+                       ToolTip="Search the web; queries never enter the address bar" />
+              <Button Grid.Column="2" Click="Search_Click" Content="Search" Margin="3" Padding="8,2" Cursor="Hand" />
+            </Grid>
+          </Border>
         </Grid>
       </Border>
 
