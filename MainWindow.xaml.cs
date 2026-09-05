@@ -77,7 +77,7 @@ public partial class MainWindow : Window
             : "This page";
         var result = MessageBox.Show(
             $"{origin} is requesting access to {e.PermissionKind}.\n\nAllow this request once?",
-            "Northstar site permission", MessageBoxButton.YesNo,
+            "Newton site permission", MessageBoxButton.YesNo,
             MessageBoxImage.Warning, MessageBoxResult.No);
         e.State = result == MessageBoxResult.Yes
             ? CoreWebView2PermissionState.Allow
@@ -101,7 +101,7 @@ public partial class MainWindow : Window
         {
             tab.Title = string.IsNullOrWhiteSpace(core.DocumentTitle) ? "New page" : core.DocumentTitle;
             TabStrip.Items.Refresh();
-            Title = $"{tab.Title} — Northstar Alpha";
+            Title = $"{tab.Title} — Newton Alpha";
         });
         core.SourceChanged += (_, _) => Dispatcher.Invoke(UpdateChrome);
         core.HistoryChanged += (_, _) => Dispatcher.Invoke(UpdateChrome);
@@ -156,7 +156,7 @@ public partial class MainWindow : Window
             case ">group": GroupTab_Click(this, new RoutedEventArgs()); break;
             case ">theme": Theme_Click(this, new RoutedEventArgs()); break;
             case ">layout": Customise_Click(this, new RoutedEventArgs()); break;
-            default: MessageBox.Show("Commands: >split, >group, >theme, >layout", "Northstar commands"); break;
+            default: MessageBox.Show("Commands: >split, >group, >theme, >layout", "Newton commands"); break;
         }
         return true;
     }
@@ -231,7 +231,7 @@ public partial class MainWindow : Window
     }
 
     private void Privacy_Click(object sender, RoutedEventArgs e) => MessageBox.Show(
-        "HIGH protection is active by default.\n\n• No Northstar telemetry\n• Strict WebView2 tracking prevention\n• Known advertising and analytics hosts blocked\n• Microsoft reputation checking enabled\n• Chromium process sandbox inherited from WebView2\n• Browser extensions disabled\n• High-entropy fingerprint values reduced\n• Website permissions denied\n• Invalid certificates rejected\n• Password saving and autofill disabled\n• Evergreen engine security updates\n\nThis is mitigation, not anonymity. Some sites may break, and WebView2 cannot provide Tor-level fingerprint resistance.",
+        "HIGH protection is active by default.\n\n• No Newton telemetry\n• Strict WebView2 tracking prevention\n• Known advertising and analytics hosts blocked\n• Microsoft reputation checking enabled\n• Chromium process sandbox inherited from WebView2\n• Browser extensions disabled\n• High-entropy fingerprint values reduced\n• Website permissions require one-time approval\n• Invalid certificates rejected\n• Password saving and autofill disabled\n• Evergreen engine security updates\n\nThis is mitigation, not anonymity. Some sites may break, and WebView2 cannot provide Tor-level fingerprint resistance.",
         "Privacy status", MessageBoxButton.OK, MessageBoxImage.Information);
 
     private void OpenPdf_Click(object sender, RoutedEventArgs e)
@@ -261,7 +261,7 @@ public partial class MainWindow : Window
         var dialog = new SaveFileDialog
         {
             Filter = "PNG image (*.png)|*.png",
-            FileName = $"Northstar-{DateTime.Now:yyyyMMdd-HHmmss}.png",
+            FileName = $"Newton-{DateTime.Now:yyyyMMdd-HHmmss}.png",
             AddExtension = true
         };
         if (dialog.ShowDialog(this) != true) return;
@@ -289,7 +289,7 @@ public partial class MainWindow : Window
         RandomNumberGenerator.Shuffle(password);
         Clipboard.SetText(new string(password));
         MessageBox.Show(
-            "A 20-character password has been copied to the clipboard. Paste it now; Northstar has not stored it.",
+            "A 20-character password has been copied to the clipboard. Paste it now; Newton has not stored it.",
             "Strong password generated", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
