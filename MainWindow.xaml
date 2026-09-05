@@ -62,6 +62,7 @@
             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
           </Grid.ColumnDefinitions>
           <Button x:Name="BackButton" Click="Back_Click" Content="←" Style="{StaticResource NavButton}" />
@@ -81,6 +82,8 @@
           <Button Grid.Column="6" Click="OpenPdf_Click" Content="PDF" FontSize="11" Style="{StaticResource NavButton}" ToolTip="Open a PDF" />
           <Button Grid.Column="7" Click="PictureInPicture_Click" Content="▣" Style="{StaticResource NavButton}" ToolTip="Picture-in-Picture video" />
           <Button Grid.Column="8" Click="Screenshot_Click" Content="⌗" Style="{StaticResource NavButton}" ToolTip="Save viewport screenshot" />
+          <Button Grid.Column="9" Click="GeneratePassword_Click" Content="Key" FontSize="10" Style="{StaticResource NavButton}" ToolTip="Generate a strong password" />
+          <Button Grid.Column="10" Click="DeveloperTools_Click" Content="{ }" FontSize="11" Style="{StaticResource NavButton}" ToolTip="Developer tools (F12)" />
         </Grid>
       </Border>
 
