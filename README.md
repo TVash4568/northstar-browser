@@ -40,7 +40,7 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 - Cryptographically secure 20-character password generation without storage
 - Reproducible Windows release workflow and Inno Setup installer
 
-See `COMPATIBILITY.md` for the implemented web-platform matrix and deliberately gated features.
+See `COMPATIBILITY.md` for the web-platform matrix and `ENTERPRISE.md` for the enterprise-management gap analysis.
 
 ## Important security status
 
