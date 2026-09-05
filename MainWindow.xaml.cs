@@ -43,6 +43,7 @@ public partial class MainWindow : Window
 
         await view.EnsureCoreWebView2Async();
         Harden(view.CoreWebView2);
+        await PrivacyGuard.ApplyAsync(view.CoreWebView2);
         WireEvents(tab);
         view.Source = uri;
     }
@@ -125,7 +126,7 @@ public partial class MainWindow : Window
     }
 
     private void Privacy_Click(object sender, RoutedEventArgs e) => MessageBox.Show(
-        "Northstar blocks all website permission requests by default, rejects invalid certificates, disables password saving and sends no browser telemetry.\n\nAlpha limitation: tracker blocking and per-site permission prompts are not implemented yet.",
+        "HIGH protection is active by default.\n\n• No Northstar telemetry\n• Strict WebView2 tracking prevention\n• Known advertising and analytics hosts blocked\n• High-entropy fingerprint values reduced\n• Website permissions denied\n• Invalid certificates rejected\n• Password saving and autofill disabled\n\nThis is mitigation, not anonymity. Some sites may break, and WebView2 cannot provide Tor-level fingerprint resistance.",
         "Privacy status", MessageBoxButton.OK, MessageBoxImage.Information);
 
     private async void HandleShortcuts(object sender, KeyEventArgs e)
