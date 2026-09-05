@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -59,14 +60,29 @@ public partial class MainWindow : Window
     {
         var settings = core.Settings;
         settings.IsStatusBarEnabled = false;
-        settings.AreDevToolsEnabled = false;
+        settings.AreDevToolsEnabled = true;
         settings.AreDefaultContextMenusEnabled = true;
         settings.IsPasswordAutosaveEnabled = false;
         settings.IsGeneralAutofillEnabled = false;
         settings.IsWebMessageEnabled = false;
         settings.IsReputationCheckingRequired = true;
-        core.PermissionRequested += (_, e) => e.State = CoreWebView2PermissionState.Deny;
+        core.PermissionRequested += HandlePermissionRequest;
         core.ServerCertificateErrorDetected += (_, e) => e.Action = CoreWebView2ServerCertificateErrorAction.Cancel;
+    }
+
+    private static void HandlePermissionRequest(object? sender, CoreWebView2PermissionRequestedEventArgs e)
+    {
+        var origin = Uri.TryCreate(e.Uri, UriKind.Absolute, out var uri)
+            ? uri.GetLeftPart(UriPartial.Authority)
+            : "This page";
+        var result = MessageBox.Show(
+            $"{origin} is requesting access to {e.PermissionKind}.\n\nAllow this request once?",
+            "Northstar site permission", MessageBoxButton.YesNo,
+            MessageBoxImage.Warning, MessageBoxResult.No);
+        e.State = result == MessageBoxResult.Yes
+            ? CoreWebView2PermissionState.Allow
+            : CoreWebView2PermissionState.Deny;
+        e.SavesInProfile = false;
     }
 
     private Task<CoreWebView2Environment> GetEnvironmentAsync() =>
@@ -253,6 +269,30 @@ public partial class MainWindow : Window
         await core.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png, stream);
     }
 
+    private void DeveloperTools_Click(object sender, RoutedEventArgs e) =>
+        CurrentTab?.View.CoreWebView2?.OpenDevToolsWindow();
+
+    private void GeneratePassword_Click(object sender, RoutedEventArgs e)
+    {
+        const string lower = "abcdefghijkmnopqrstuvwxyz";
+        const string upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        const string digits = "23456789";
+        const string symbols = "!@#$%&*+-=?";
+        const string all = lower + upper + digits + symbols;
+        var password = new char[20];
+        password[0] = lower[RandomNumberGenerator.GetInt32(lower.Length)];
+        password[1] = upper[RandomNumberGenerator.GetInt32(upper.Length)];
+        password[2] = digits[RandomNumberGenerator.GetInt32(digits.Length)];
+        password[3] = symbols[RandomNumberGenerator.GetInt32(symbols.Length)];
+        for (var i = 4; i < password.Length; i++)
+            password[i] = all[RandomNumberGenerator.GetInt32(all.Length)];
+        RandomNumberGenerator.Shuffle(password);
+        Clipboard.SetText(new string(password));
+        MessageBox.Show(
+            "A 20-character password has been copied to the clipboard. Paste it now; Northstar has not stored it.",
+            "Strong password generated", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
     private void Customise_Click(object sender, RoutedEventArgs e)
     {
         _layoutMode = (_layoutMode + 1) % 3;
@@ -283,6 +323,12 @@ public partial class MainWindow : Window
 
     private async void HandleShortcuts(object sender, KeyEventArgs e)
     {
+        if (e.Key == Key.F12)
+        {
+            DeveloperTools_Click(this, new RoutedEventArgs());
+            e.Handled = true;
+            return;
+        }
         if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
         if (e.Key == Key.L) { AddressBox.Focus(); AddressBox.SelectAll(); e.Handled = true; }
         if (e.Key == Key.T && CurrentSession is not null) { await CreateTabAsync(CurrentSession, new Uri("https://duckduckgo.com")); e.Handled = true; }
@@ -290,5 +336,6 @@ public partial class MainWindow : Window
         if (e.Key == Key.G && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) { GroupTab_Click(this, new RoutedEventArgs()); e.Handled = true; }
         if (e.Key == Key.S && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) { SplitToggle.IsChecked = !(SplitToggle.IsChecked ?? false); SplitToggle_Click(this, new RoutedEventArgs()); e.Handled = true; }
         if (e.Key == Key.D && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) { Theme_Click(this, new RoutedEventArgs()); e.Handled = true; }
+        if (e.Key == Key.I && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) { DeveloperTools_Click(this, new RoutedEventArgs()); e.Handled = true; }
     }
 }
