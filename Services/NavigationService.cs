@@ -11,7 +11,7 @@ public static class NavigationService
             ["Google"] = "https://www.google.com/search?q="
         };
 
-    public static IReadOnlyCollection<string> SearchProviders => SearchEndpoints.Keys;
+    public static IReadOnlyCollection<string> SearchProviders => SearchEndpoints.Keys.ToArray();
 
     public static bool TryResolveAddress(string input, out Uri? destination)
     {
