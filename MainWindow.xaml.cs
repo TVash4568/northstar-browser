@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
@@ -286,7 +287,7 @@ public partial class MainWindow : Window
         password[3] = symbols[RandomNumberGenerator.GetInt32(symbols.Length)];
         for (var i = 4; i < password.Length; i++)
             password[i] = all[RandomNumberGenerator.GetInt32(all.Length)];
-        RandomNumberGenerator.Shuffle(password);
+        RandomNumberGenerator.Shuffle(password.AsSpan());
         Clipboard.SetText(new string(password));
         MessageBox.Show(
             "A 20-character password has been copied to the clipboard. Paste it now; Newton has not stored it.",
