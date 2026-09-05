@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <AssemblyName>Northstar</AssemblyName>
+    <AssemblyName>Newton</AssemblyName>
     <RootNamespace>NorthstarBrowser</RootNamespace>
     <Version>0.1.0</Version>
   </PropertyGroup>
