@@ -7,7 +7,9 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 ## Current alpha capabilities
 
 - Multiple task sessions and pages
-- Address and DuckDuckGo search bar
+- Separate website address bar and web-search box
+- User-selectable DuckDuckGo, Bing, Brave Search and Google providers
+- Private-by-default search UI with no remote query suggestions
 - Back, forward, reload and keyboard shortcuts
 - HTTPS status indicator
 - Invalid-certificate cancellation
@@ -19,12 +21,16 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 - Network blocking for known advertising and analytics hosts
 - Reduced high-entropy fingerprinting values
 - Microsoft reputation checking for malicious and phishing sites
-- Browser extensions disabled to remove extension supply-chain risk
+- Browser extensions disabled in this alpha while a controlled future model is evaluated
 - Chromium process sandbox supplied and serviced by WebView2
 - Evergreen browser-engine security updates
-- Shared WebView2 environment to avoid redundant engine initialisation
+- Evergreen WebView2 environment isolated by browser profile
 - Automatic suspension of inactive pages to reduce CPU, RAM and battery use
 - Named workspaces using the Session Canvas rail
+- Fundamental profile → workspace → tab-group → tab ownership model
+- Versioned SQLite storage for Newton-owned history, bookmarks, profiles, workspaces and recovery state
+- Periodic crash-recovery snapshots with clean-shutdown detection
+- First-class tab lifecycle subsystem
 - Vertical page list with visible tab-group labels
 - Four quick tab groups: General, Research, Work and Later
 - Two-page split view
@@ -32,7 +38,7 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 - Spacious, Compact and Focus interface layouts
 - Light and dark themes
 - Keyboard controls for navigation, commands, groups, split view and themes
-- Address-bar command mode (`Ctrl+K`): `>split`, `>group`, `>theme`, `>layout`
+- Dedicated search focus with `Ctrl+K` or `Ctrl+E`; `Ctrl+L` focuses the address bar
 - Local and web PDF viewing through the built-in Chromium PDF renderer
 - Picture-in-Picture for compatible page videos
 - PNG capture of the visible browser viewport
@@ -43,6 +49,8 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 See `COMPATIBILITY.md` for the web-platform matrix and `ENTERPRISE.md` for the enterprise-management gap analysis.
 
 The incremental cross-platform boundary and proposed project split are documented in `TARGET_STRUCTURE.md`.
+
+AI is a separate optional subsystem, disabled by default. See `AI_POLICY.md` for provider independence and explicit page-context rules.
 
 ## Important security status
 
