@@ -2,6 +2,8 @@
 
 Northstar is an experimental Windows browser organised around task sessions instead of an endless row of tabs. It uses Microsoft's Evergreen WebView2 runtime so the rendering engine receives Chromium security updates independently of the application.
 
+Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multiprocess execution and site isolation—is documented in `ARCHITECTURE.md`.
+
 ## Current alpha capabilities
 
 - Multiple task sessions and pages
