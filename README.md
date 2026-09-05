@@ -31,6 +31,9 @@ Northstar is an experimental Windows browser organised around task sessions inst
 - Light and dark themes
 - Keyboard controls for navigation, commands, groups, split view and themes
 - Address-bar command mode (`Ctrl+K`): `>split`, `>group`, `>theme`, `>layout`
+- Local and web PDF viewing through the built-in Chromium PDF renderer
+- Picture-in-Picture for compatible page videos
+- PNG capture of the visible browser viewport
 - Reproducible Windows release workflow and Inno Setup installer
 
 ## Important security status

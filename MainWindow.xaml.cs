@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
+using Microsoft.Win32;
 using NorthstarBrowser.Models;
 using NorthstarBrowser.Services;
 
@@ -216,6 +217,41 @@ public partial class MainWindow : Window
     private void Privacy_Click(object sender, RoutedEventArgs e) => MessageBox.Show(
         "HIGH protection is active by default.\n\n• No Northstar telemetry\n• Strict WebView2 tracking prevention\n• Known advertising and analytics hosts blocked\n• Microsoft reputation checking enabled\n• Chromium process sandbox inherited from WebView2\n• Browser extensions disabled\n• High-entropy fingerprint values reduced\n• Website permissions denied\n• Invalid certificates rejected\n• Password saving and autofill disabled\n• Evergreen engine security updates\n\nThis is mitigation, not anonymity. Some sites may break, and WebView2 cannot provide Tor-level fingerprint resistance.",
         "Privacy status", MessageBoxButton.OK, MessageBoxImage.Information);
+
+    private void OpenPdf_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFileDialog { Filter = "PDF documents (*.pdf)|*.pdf", CheckFileExists = true };
+        if (dialog.ShowDialog(this) == true && CurrentTab is not null)
+            CurrentTab.View.Source = new Uri(dialog.FileName);
+    }
+
+    private async void PictureInPicture_Click(object sender, RoutedEventArgs e)
+    {
+        if (CurrentTab?.View.CoreWebView2 is not { } core) return;
+        var result = await core.ExecuteScriptAsync("""
+            (() => {
+              const video = [...document.querySelectorAll('video')].find(v => !v.paused) || document.querySelector('video');
+              if (!video || !document.pictureInPictureEnabled || video.disablePictureInPicture) return 'unavailable';
+              video.requestPictureInPicture(); return 'requested';
+            })();
+            """);
+        if (result.Contains("unavailable", StringComparison.OrdinalIgnoreCase))
+            MessageBox.Show("No compatible video was found on this page.", "Picture-in-Picture");
+    }
+
+    private async void Screenshot_Click(object sender, RoutedEventArgs e)
+    {
+        if (CurrentTab?.View.CoreWebView2 is not { } core) return;
+        var dialog = new SaveFileDialog
+        {
+            Filter = "PNG image (*.png)|*.png",
+            FileName = $"Northstar-{DateTime.Now:yyyyMMdd-HHmmss}.png",
+            AddExtension = true
+        };
+        if (dialog.ShowDialog(this) != true) return;
+        await using var stream = File.Create(dialog.FileName);
+        await core.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png, stream);
+    }
 
     private void Customise_Click(object sender, RoutedEventArgs e)
     {

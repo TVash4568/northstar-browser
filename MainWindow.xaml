@@ -61,6 +61,8 @@
             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
           </Grid.ColumnDefinitions>
           <Button x:Name="BackButton" Click="Back_Click" Content="←" Style="{StaticResource NavButton}" />
           <Button x:Name="ForwardButton" Grid.Column="1" Click="Forward_Click" Content="→" Style="{StaticResource NavButton}" />
@@ -76,6 +78,9 @@
           </Border>
           <Button Grid.Column="4" Click="NewTab_Click" Content="＋" Style="{StaticResource NavButton}" ToolTip="New page" />
           <Button Grid.Column="5" Click="Privacy_Click" Content="◈" Style="{StaticResource NavButton}" ToolTip="Privacy status" />
+          <Button Grid.Column="6" Click="OpenPdf_Click" Content="PDF" FontSize="11" Style="{StaticResource NavButton}" ToolTip="Open a PDF" />
+          <Button Grid.Column="7" Click="PictureInPicture_Click" Content="▣" Style="{StaticResource NavButton}" ToolTip="Picture-in-Picture video" />
+          <Button Grid.Column="8" Click="Screenshot_Click" Content="⌗" Style="{StaticResource NavButton}" ToolTip="Save viewport screenshot" />
         </Grid>
       </Border>
 
