@@ -1,6 +1,6 @@
 # Performance acceptance criteria
 
-Northstar may be described as excellent only when a signed release is tested against current stable Edge, Chrome, Firefox and Brave on the same Windows 11 laptop, power mode and network.
+Newton may be described as excellent only when a signed release is tested against current stable Edge, Chrome, Firefox and Brave on the same Windows 11 laptop, power mode and network.
 
 ## Required tests
 
@@ -17,7 +17,7 @@ Northstar may be described as excellent only when a signed release is tested aga
 - No material regression versus the WebView2/Edge baseline in raw page performance.
 - Lower inactive-page CPU and memory after suspension.
 - No user-interface hang in the 100-page test.
-- No unexplained background network traffic from Northstar.
+- No unexplained background network traffic from Newton.
 - All results, hardware, versions and methodology published together.
 
 Marketing descriptions must report measured results and limitations rather than using unsupported superlatives.
