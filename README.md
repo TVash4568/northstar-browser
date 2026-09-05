@@ -16,11 +16,15 @@ Northstar is an experimental Windows browser organised around task sessions inst
 - Strict tracking prevention by default
 - Network blocking for known advertising and analytics hosts
 - Reduced high-entropy fingerprinting values
+- Microsoft reputation checking for malicious and phishing sites
+- Browser extensions disabled to remove extension supply-chain risk
+- Chromium process sandbox supplied and serviced by WebView2
+- Evergreen browser-engine security updates
 - Reproducible Windows release workflow and Inno Setup installer
 
 ## Important security status
 
-This is pre-release software. It has not undergone independent security review. The bundled blocklist is intentionally small in the first alpha; automatic list updates, per-site exceptions, signed automatic application updates, private sessions, downloads UI, history controls and accessibility testing remain incomplete. Fingerprinting protection is mitigation rather than anonymity because WebView2 controls the underlying engine. Do not use this alpha for banking, healthcare, passwords or other sensitive activity.
+This is pre-release software. It has not undergone independent security review. The bundled blocklist is intentionally small in the first alpha; automatic list updates, per-site exceptions, signed automatic application updates, private sessions, downloads UI, history controls and accessibility testing remain incomplete. Fingerprinting protection is mitigation rather than anonymity because WebView2 controls the underlying engine. Engine updates are rapid through Evergreen WebView2, but Northstar application updates are not yet automatic or signed. Do not use this alpha for banking, healthcare, passwords or other sensitive activity.
 
 ## Build
 

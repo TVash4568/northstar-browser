@@ -12,6 +12,7 @@ namespace NorthstarBrowser;
 public partial class MainWindow : Window
 {
     private readonly ObservableCollection<BrowserSession> _sessions = [];
+    private Task<CoreWebView2Environment>? _environmentTask;
     private BrowserSession? CurrentSession => SessionList.SelectedItem as BrowserSession;
     private BrowserTab? CurrentTab => TabStrip.SelectedItem as BrowserTab;
 
@@ -41,7 +42,7 @@ public partial class MainWindow : Window
         BrowserHost.Children.Clear();
         BrowserHost.Children.Add(view);
 
-        await view.EnsureCoreWebView2Async();
+        await view.EnsureCoreWebView2Async(await GetEnvironmentAsync());
         Harden(view.CoreWebView2);
         await PrivacyGuard.ApplyAsync(view.CoreWebView2);
         WireEvents(tab);
@@ -57,9 +58,19 @@ public partial class MainWindow : Window
         settings.IsPasswordAutosaveEnabled = false;
         settings.IsGeneralAutofillEnabled = false;
         settings.IsWebMessageEnabled = false;
+        settings.IsReputationCheckingRequired = true;
         core.PermissionRequested += (_, e) => e.State = CoreWebView2PermissionState.Deny;
         core.ServerCertificateErrorDetected += (_, e) => e.Action = CoreWebView2ServerCertificateErrorAction.Cancel;
     }
+
+    private Task<CoreWebView2Environment> GetEnvironmentAsync() =>
+        _environmentTask ??= CoreWebView2Environment.CreateAsync(
+            browserExecutableFolder: null,
+            userDataFolder: null,
+            options: new CoreWebView2EnvironmentOptions
+            {
+                AreBrowserExtensionsEnabled = false
+            });
 
     private void WireEvents(BrowserTab tab)
     {
@@ -126,7 +137,7 @@ public partial class MainWindow : Window
     }
 
     private void Privacy_Click(object sender, RoutedEventArgs e) => MessageBox.Show(
-        "HIGH protection is active by default.\n\n• No Northstar telemetry\n• Strict WebView2 tracking prevention\n• Known advertising and analytics hosts blocked\n• High-entropy fingerprint values reduced\n• Website permissions denied\n• Invalid certificates rejected\n• Password saving and autofill disabled\n\nThis is mitigation, not anonymity. Some sites may break, and WebView2 cannot provide Tor-level fingerprint resistance.",
+        "HIGH protection is active by default.\n\n• No Northstar telemetry\n• Strict WebView2 tracking prevention\n• Known advertising and analytics hosts blocked\n• Microsoft reputation checking enabled\n• Chromium process sandbox inherited from WebView2\n• Browser extensions disabled\n• High-entropy fingerprint values reduced\n• Website permissions denied\n• Invalid certificates rejected\n• Password saving and autofill disabled\n• Evergreen engine security updates\n\nThis is mitigation, not anonymity. Some sites may break, and WebView2 cannot provide Tor-level fingerprint resistance.",
         "Privacy status", MessageBoxButton.OK, MessageBoxImage.Information);
 
     private async void HandleShortcuts(object sender, KeyEventArgs e)
