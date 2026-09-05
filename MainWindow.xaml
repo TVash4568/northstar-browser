@@ -1,7 +1,7 @@
 <Window x:Class="NorthstarBrowser.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Northstar Alpha" Height="820" Width="1380" MinHeight="620" MinWidth="920"
+        Title="Newton Alpha" Height="820" Width="1380" MinHeight="620" MinWidth="920"
         Background="{StaticResource Canvas}" WindowStartupLocation="CenterScreen">
   <Window.Resources>
     <Style x:Key="NavButton" TargetType="Button">
