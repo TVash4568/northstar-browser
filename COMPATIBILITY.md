@@ -14,11 +14,11 @@ Newton uses Microsoft Evergreen WebView2. Engine features follow the installed W
 | Password generation | 20-character CSPRNG-generated value copied to the clipboard and never stored | Implemented |
 | Password storage | WebView2 autosave and autofill remain disabled | Awaiting a reviewed Windows-protected vault |
 | Passkeys/FIDO2 | WebAuthn support inherited from WebView2 and Windows | Site, runtime and authenticator dependent |
-| Extensions | Disabled at WebView2 environment creation | Manifest V2 unsupported; restricted MV3-like design remains future work |
+| Extensions | Disabled in the current alpha at WebView2 environment creation | Future support is an open architecture decision; WebView2 does not imply full Chrome Web Store compatibility |
 | PWA installation | Service-worker and manifest web APIs may run in pages | Browser-level installation, shortcuts and app management not implemented |
 | Push/background work | Subject to WebView2 support and explicit permission | Background execution must remain constrained |
 | DRM | EME/DRM only where runtime, service and device permit | Netflix, Prime Video, 1080p/4K/HDR and hardware DRM are not guaranteed |
 
 ## Deliberately gated features
 
-A password vault, breach monitoring, encrypted cross-device sync, installable PWAs, enterprise policy, extension installation, certified streaming playback, hardware DRM guarantees and signed automatic Newton updates require further engineering, external infrastructure, independent review or provider approval. They must not be advertised as complete.
+A password vault, breach monitoring, encrypted cross-device sync, installable PWAs, a reviewed extension installation model, enterprise policy, certified streaming playback, hardware DRM guarantees and signed automatic Newton updates require further engineering, external infrastructure, independent review or provider approval. They must not be advertised as complete.
