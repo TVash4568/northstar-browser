@@ -13,6 +13,7 @@ public partial class MainWindow : Window
 {
     private readonly ObservableCollection<BrowserSession> _sessions = [];
     private Task<CoreWebView2Environment>? _environmentTask;
+    private BrowserTab? _previousTab;
     private BrowserSession? CurrentSession => SessionList.SelectedItem as BrowserSession;
     private BrowserTab? CurrentTab => TabStrip.SelectedItem as BrowserTab;
 
@@ -128,9 +129,17 @@ public partial class MainWindow : Window
         TabStrip.SelectedItem = session.Tabs.FirstOrDefault();
     }
 
-    private void TabStrip_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void TabStrip_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (CurrentTab is not { } tab) return;
+
+        if (_previousTab is { } previous && previous != tab && previous.View.CoreWebView2 is not null)
+            await previous.View.CoreWebView2.TrySuspendAsync();
+
+        if (tab.View.CoreWebView2 is { IsSuspended: true } activeCore)
+            activeCore.Resume();
+
+        _previousTab = tab;
         BrowserHost.Children.Clear();
         BrowserHost.Children.Add(tab.View);
         UpdateChrome();

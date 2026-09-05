@@ -20,6 +20,8 @@ Northstar is an experimental Windows browser organised around task sessions inst
 - Browser extensions disabled to remove extension supply-chain risk
 - Chromium process sandbox supplied and serviced by WebView2
 - Evergreen browser-engine security updates
+- Shared WebView2 environment to avoid redundant engine initialisation
+- Automatic suspension of inactive pages to reduce CPU, RAM and battery use
 - Reproducible Windows release workflow and Inno Setup installer
 
 ## Important security status
@@ -36,6 +38,10 @@ dotnet run
 ```
 
 Create a tagged GitHub release (`v0.1.0`) to run the Windows build workflow. Release executables are initially unsigned and may trigger Microsoft SmartScreen.
+
+## Performance status
+
+Northstar is designed for low shell overhead, but no performance superiority is claimed before repeatable Windows benchmarks are completed. See `PERFORMANCE.md` for the acceptance criteria.
 
 ## Licence
 
