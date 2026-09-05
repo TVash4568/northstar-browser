@@ -12,9 +12,9 @@ Settings
     └── Local model
 ```
 
-Provider implementations sit behind Newton-owned `IAIProvider`; no provider owns the browser integration. Newton must not send a URL, page text, browsing history, cookies, form contents, downloads or profile data implicitly.
+Provider implementations sit behind Newton-owned `IAIProvider`; `IAIContextProvider` separately controls what information is eligible to leave Newton. No provider owns the browser integration or context policy. Newton must not send a URL, page text, browsing history, cookies, form contents, downloads or profile data implicitly.
 
-Passwords and private-page content are never eligible for AI sharing. Ordinary page context requires a visible confirmation for every action, identifying the destination provider, page origin and information being sent. Choosing a provider is not continuing consent for history, other tabs or future pages. The core `AIContextPolicy` refuses private-profile context and refuses context without per-action confirmation.
+Passwords and private-page content are never eligible for AI sharing. Ordinary page context requires a visible confirmation for every action, identifying the destination provider, context scope, page origins and information being sent. Choosing a provider is not continuing consent for history, other tabs or future pages. The core `AIContextGuard` refuses private-profile context and refuses context without per-action confirmation.
 
 Provider credentials must use operating-system-protected storage and must never be committed to source control or written to logs.
 
