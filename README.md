@@ -42,6 +42,8 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 
 See `COMPATIBILITY.md` for the web-platform matrix and `ENTERPRISE.md` for the enterprise-management gap analysis.
 
+The incremental cross-platform boundary and proposed project split are documented in `TARGET_STRUCTURE.md`.
+
 ## Important security status
 
 This is pre-release software. It has not undergone independent security review. The bundled blocklist is intentionally small in the first alpha; automatic list updates, per-site exceptions, signed automatic application updates, private sessions, downloads UI, history controls and accessibility testing remain incomplete. Fingerprinting protection is mitigation rather than anonymity because WebView2 controls the underlying engine. Engine updates are rapid through Evergreen WebView2, but Newton application updates are not yet automatic or signed. Do not use this alpha for banking, healthcare, passwords or other sensitive activity.
