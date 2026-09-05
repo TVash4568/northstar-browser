@@ -44,6 +44,6 @@ public static class PrivacyGuard
                 host.EndsWith('.' + blocked, StringComparison.OrdinalIgnoreCase))) return;
 
         if (sender is CoreWebView2 core)
-            e.Response = core.Environment.CreateWebResourceResponse(null, 403, "Blocked by Northstar", "Content-Type: text/plain");
+            e.Response = core.Environment.CreateWebResourceResponse(null, 403, "Blocked by Newton", "Content-Type: text/plain");
     }
 }
