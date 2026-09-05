@@ -35,7 +35,7 @@ jobs:
         run: Get-FileHash artifacts\*.exe -Algorithm SHA256 | Format-List | Out-File artifacts\SHA256.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Northstar-Windows
+          name: Newton-Windows
           path: artifacts/*
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
