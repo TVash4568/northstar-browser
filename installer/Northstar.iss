@@ -1,17 +1,17 @@
-#define AppName "Northstar Browser Alpha"
+#define AppName "Newton Browser Alpha"
 #define AppVersion "0.1.0"
-#define AppPublisher "Northstar Open Source Project"
-#define AppExeName "Northstar.exe"
+#define AppPublisher "Newton Open Source Project"
+#define AppExeName "Newton.exe"
 
 [Setup]
 AppId={{65162C56-50C5-48F4-B43A-054068F893E2}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
-DefaultDirName={autopf}\Northstar Browser
+DefaultDirName={autopf}\Newton Browser
 DefaultGroupName={#AppName}
 OutputDir=..\artifacts
-OutputBaseFilename=NorthstarBrowser-0.1.0-win-x64-setup
+OutputBaseFilename=NewtonBrowser-0.1.0-win-x64-setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
