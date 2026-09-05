@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace Newton.Core.Browsing;
 
 public interface IBrowserEngine : IAsyncDisposable
