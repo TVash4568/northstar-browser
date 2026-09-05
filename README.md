@@ -11,7 +11,7 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 - Back, forward, reload and keyboard shortcuts
 - HTTPS status indicator
 - Invalid-certificate cancellation
-- Website permissions denied by default
+- Website permissions require a fresh, origin-labelled decision and are denied when refused
 - Password saving and form autofill disabled
 - New-window requests contained in a new browser page
 - No application telemetry
@@ -36,7 +36,11 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 - Local and web PDF viewing through the built-in Chromium PDF renderer
 - Picture-in-Picture for compatible page videos
 - PNG capture of the visible browser viewport
+- Chromium/WebView2 developer tools via F12 or Ctrl+Shift+I
+- Cryptographically secure 20-character password generation without storage
 - Reproducible Windows release workflow and Inno Setup installer
+
+See `COMPATIBILITY.md` for the implemented web-platform matrix and deliberately gated features.
 
 ## Important security status
 
