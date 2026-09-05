@@ -22,6 +22,15 @@ Northstar is an experimental Windows browser organised around task sessions inst
 - Evergreen browser-engine security updates
 - Shared WebView2 environment to avoid redundant engine initialisation
 - Automatic suspension of inactive pages to reduce CPU, RAM and battery use
+- Named workspaces using the Session Canvas rail
+- Vertical page list with visible tab-group labels
+- Four quick tab groups: General, Research, Work and Later
+- Two-page split view
+- Inactive-page suspension, with full unload-and-restore hibernation planned
+- Spacious, Compact and Focus interface layouts
+- Light and dark themes
+- Keyboard controls for navigation, commands, groups, split view and themes
+- Address-bar command mode (`Ctrl+K`): `>split`, `>group`, `>theme`, `>layout`
 - Reproducible Windows release workflow and Inno Setup installer
 
 ## Important security status

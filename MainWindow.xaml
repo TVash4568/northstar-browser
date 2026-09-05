@@ -17,7 +17,7 @@
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
 
-    <Border Grid.Column="0" Background="#111827">
+    <Border x:Name="SessionRail" Grid.Column="0" Background="#111827">
       <Grid Margin="10,14">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
@@ -39,8 +39,12 @@
             </DataTemplate>
           </ListBox.ItemTemplate>
         </ListBox>
-        <Button Grid.Row="2" Content="⚙" ToolTip="Settings" FontSize="19" Foreground="#CBD5E1"
-                Background="Transparent" BorderThickness="0" Width="48" Height="48" />
+        <StackPanel Grid.Row="2">
+          <Button Click="Theme_Click" Content="◐" ToolTip="Switch light/dark theme" FontSize="19" Foreground="#CBD5E1"
+                  Background="Transparent" BorderThickness="0" Width="48" Height="42" />
+          <Button Click="Customise_Click" Content="⚙" ToolTip="Cycle Spacious, Compact and Focus layouts" FontSize="19" Foreground="#CBD5E1"
+                  Background="Transparent" BorderThickness="0" Width="48" Height="42" />
+        </StackPanel>
       </Grid>
     </Border>
 
@@ -51,7 +55,7 @@
         <RowDefinition Height="*" />
       </Grid.RowDefinitions>
 
-      <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1">
+      <Border x:Name="ChromeBar" Background="White" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1">
         <Grid Margin="14,8">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
@@ -75,11 +79,28 @@
         </Grid>
       </Border>
 
-      <Border Grid.Row="1" Background="#FAFBFC" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1">
-        <TabControl x:Name="TabStrip" SelectionChanged="TabStrip_SelectionChanged" Background="Transparent" BorderThickness="0" Margin="8,4" />
+      <Border x:Name="WorkspaceBar" Grid.Row="1" Background="#FAFBFC" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1">
+        <Grid Margin="14,5">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+          <TextBlock x:Name="WorkspaceTitle" Text="WORKSPACE" FontWeight="SemiBold" Foreground="#64748B" VerticalAlignment="Center" />
+          <Button x:Name="GroupButton" Grid.Column="1" Click="GroupTab_Click" Content="Group" Padding="14,6" Margin="4,0" ToolTip="Move this page to another group" />
+          <ToggleButton x:Name="SplitToggle" Grid.Column="2" Click="SplitToggle_Click" Content="Split view" Padding="14,6" Margin="4,0" />
+        </Grid>
       </Border>
 
-      <Grid x:Name="BrowserHost" Grid.Row="2" Background="White" />
+      <Grid Grid.Row="2" Background="White">
+        <Grid.ColumnDefinitions><ColumnDefinition x:Name="TabColumn" Width="230"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+        <Border x:Name="VerticalTabsPanel" Background="#F8FAFC" BorderBrush="#E5E7EB" BorderThickness="0,0,1,0">
+          <ListBox x:Name="TabStrip" SelectionChanged="TabStrip_SelectionChanged" DisplayMemberPath="DisplayTitle"
+                   Background="Transparent" BorderThickness="0" Margin="8" Padding="2" />
+        </Border>
+        <Grid x:Name="BrowserHost" Grid.Column="1">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="0"/><ColumnDefinition Width="0"/></Grid.ColumnDefinitions>
+          <Grid x:Name="PrimaryHost" Grid.Column="0" Background="White" />
+          <GridSplitter x:Name="SplitDivider" Grid.Column="1" Width="5" Background="#CBD5E1" Visibility="Collapsed" />
+          <Grid x:Name="SecondaryHost" Grid.Column="2" Background="White" Visibility="Collapsed" />
+        </Grid>
+      </Grid>
     </Grid>
   </Grid>
 

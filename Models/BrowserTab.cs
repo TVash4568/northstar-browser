@@ -6,5 +6,7 @@ public sealed class BrowserTab
 {
     public required WebView2 View { get; init; }
     public string Title { get; set; } = "New page";
-    public override string ToString() => Title.Length > 24 ? Title[..24] + "…" : Title;
+    public string Group { get; set; } = "General";
+    public string DisplayTitle => $"{Group}  ·  {(Title.Length > 22 ? Title[..22] + "…" : Title)}";
+    public override string ToString() => DisplayTitle;
 }
