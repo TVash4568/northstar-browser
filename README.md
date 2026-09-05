@@ -13,11 +13,14 @@ Northstar is an experimental Windows browser organised around task sessions inst
 - Password saving and form autofill disabled
 - New-window requests contained in a new browser page
 - No application telemetry
+- Strict tracking prevention by default
+- Network blocking for known advertising and analytics hosts
+- Reduced high-entropy fingerprinting values
 - Reproducible Windows release workflow and Inno Setup installer
 
 ## Important security status
 
-This is pre-release software. It has not undergone independent security review. Tracker blocking, per-site permission decisions, signed automatic application updates, private sessions, downloads UI, history controls and accessibility testing remain incomplete. Do not use this alpha for banking, healthcare, passwords or other sensitive activity.
+This is pre-release software. It has not undergone independent security review. The bundled blocklist is intentionally small in the first alpha; automatic list updates, per-site exceptions, signed automatic application updates, private sessions, downloads UI, history controls and accessibility testing remain incomplete. Fingerprinting protection is mitigation rather than anonymity because WebView2 controls the underlying engine. Do not use this alpha for banking, healthcare, passwords or other sensitive activity.
 
 ## Build
 
