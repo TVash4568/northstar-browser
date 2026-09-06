@@ -12,5 +12,7 @@
 | ADR-008 | Telemetry and AI are off by default | Accepted | Any future context transfer requires explicit action-specific consent |
 | ADR-009 | Extensions are deferred, not declared impossible | Accepted | Future support requires compatibility and permission review |
 | ADR-010 | macOS/Linux work follows Windows quality gates | Accepted | No premature cross-platform production promise |
+| ADR-011 | AI processing, context and actions use three separate contracts | Accepted | A model provider cannot grant itself data access or browser authority |
+| ADR-012 | Newton 1.0 keeps extensions disabled | Accepted | Resolves the reports' conflict: v1 does not promise extension compatibility; future support must enforce least privilege |
 
 New ADRs must record context, decision, alternatives, security/privacy impact, migration impact and reversal cost.
