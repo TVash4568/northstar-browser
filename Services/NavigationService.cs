@@ -1,7 +1,10 @@
 namespace NorthstarBrowser.Services;
 
+using Newton.Core.Security;
+
 public static class NavigationService
 {
+    private static readonly INavigationPolicy Policy = new DefaultNavigationPolicy();
     private static readonly IReadOnlyDictionary<string, string> SearchEndpoints =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -17,7 +20,7 @@ public static class NavigationService
     {
         input = input.Trim();
         if (Uri.TryCreate(input, UriKind.Absolute, out var absolute) &&
-            absolute.Scheme is "https" or "http")
+            Policy.Evaluate(absolute, hasUserGesture: true).IsAllowed)
         {
             destination = absolute;
             return true;
@@ -34,6 +37,9 @@ public static class NavigationService
         destination = null;
         return false;
     }
+
+    public static NavigationDecision Evaluate(Uri destination, bool hasUserGesture = true) =>
+        Policy.Evaluate(destination, hasUserGesture);
 
     public static Uri CreateSearch(string provider, string query)
     {
