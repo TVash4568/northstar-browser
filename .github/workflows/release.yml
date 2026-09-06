@@ -27,6 +27,8 @@ jobs:
         run: ./scripts/check-architecture.ps1
       - name: Restore
         run: dotnet restore NorthstarBrowser.csproj
+      - name: Audit dependencies
+        run: dotnet list NorthstarBrowser.csproj package --vulnerable --include-transitive
       - name: Publish
         run: dotnet publish NorthstarBrowser.csproj -c Release -r win-x64 --self-contained true -o publish
       - name: Install Inno Setup
