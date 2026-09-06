@@ -3,11 +3,16 @@ using Newton.Core.Privacy;
 
 namespace NorthstarBrowser.Windows.WebView2;
 
-public sealed class WebView2ContentFilterAdapter(IContentFilter filter)
+public sealed class WebView2ContentFilterAdapter(IContentFilter filter, PrivacyLevel level = PrivacyLevel.Strict)
 {
     public async Task ApplyAsync(CoreWebView2 core)
     {
-        core.Profile.PreferredTrackingPreventionLevel = CoreWebView2TrackingPreventionLevel.Strict;
+        core.Profile.PreferredTrackingPreventionLevel = level switch
+        {
+            PrivacyLevel.Standard => CoreWebView2TrackingPreventionLevel.Basic,
+            PrivacyLevel.Balanced => CoreWebView2TrackingPreventionLevel.Balanced,
+            _ => CoreWebView2TrackingPreventionLevel.Strict
+        };
         core.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All);
         core.WebResourceRequested += (_, e) =>
         {
