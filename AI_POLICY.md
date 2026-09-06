@@ -12,10 +12,12 @@ Settings
     └── Local model
 ```
 
-Provider implementations sit behind Newton-owned `IAIProvider`; `IAIContextProvider` separately controls what information is eligible to leave Newton. No provider owns the browser integration or context policy. Newton must not send a URL, page text, browsing history, cookies, form contents, downloads or profile data implicitly.
+Provider implementations sit behind Newton-owned `IAIProvider`; `IAIContextProvider` separately controls what information is eligible to leave Newton; `IAIActionProvider` controls what an assistant may change. Read authority never implies action authority. No provider owns the browser integration or context policy. Newton must not send a URL, page text, browsing history, cookies, form contents, downloads or profile data implicitly.
 
 Passwords and private-page content are never eligible for AI sharing. Ordinary page context requires a visible confirmation for every action, identifying the destination provider, context scope, page origins and information being sent. Choosing a provider is not continuing consent for history, other tabs or future pages. The core `AIContextGuard` refuses private-profile context and refuses context without per-action confirmation.
 
 Provider credentials must use operating-system-protected storage and must never be committed to source control or written to logs.
 
 Disabling AI must prevent provider initialisation and network requests, not merely hide AI controls. AI failures must never block navigation or weaken browser security decisions.
+
+Any future browser action requires a short-lived Newton-issued grant bound to a user gesture, permitted origins, permitted action classes, context scope, operation limit and expiry. Purchase and authentication actions are prohibited by the current core policy. Page instructions are untrusted data and cannot expand a grant.
