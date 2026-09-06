@@ -60,6 +60,10 @@ Engineering governance is tracked in `docs/REQUIREMENTS-TRACEABILITY.md`, `docs/
 AI is a separate optional subsystem, disabled by default. See `AI_POLICY.md` for provider independence and explicit page-context rules.
 The architecture now separates AI processing, context disclosure and browser-action authority. No AI provider or agentic action implementation is enabled in this build.
 
+## Commercial direction
+
+Newton's browser core is intended to remain free. The first proposed paid service is **Newton Pro**, centred on end-to-end encrypted workspace synchronisation, advanced organisation, secure backup and optional provider-independent AI. The working target is **£5.99 per month**, subject to cost analysis and user validation. Essential security, privacy and browser updates will not be paywalled. See `docs/COMMERCIAL-MODEL.md`.
+
 ## Important security status
 
 This is pre-release software. It has not undergone independent security review. The bundled, versioned blocklist is intentionally small in the first alpha; signed ruleset updates, per-site exceptions, signed automatic application updates, private sessions, downloads UI, history controls and accessibility testing remain incomplete. Fingerprinting protection is mitigation rather than anonymity because WebView2 controls the underlying engine. Engine updates are rapid through Evergreen WebView2, but Newton application updates are not yet automatic or signed. Do not use this alpha for banking, healthcare, passwords or other sensitive activity.
