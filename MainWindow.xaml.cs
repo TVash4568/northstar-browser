@@ -9,6 +9,7 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Win32;
 using Newton.Core.Domain;
 using Newton.Core.Privacy;
+using Newton.Core.Security;
 using NorthstarBrowser.Services;
 using NorthstarBrowser.Windows.WebView2;
 using WebViewControl = Microsoft.Web.WebView2.Wpf.WebView2;
@@ -21,6 +22,7 @@ public partial class MainWindow : Window
     private readonly ProfileModel _profile = new(DefaultProfileId, "Default");
     private readonly WebView2RendererRegistry _renderers = new();
     private readonly WebView2ContentFilterAdapter _privacy = new(new HostContentFilter());
+    private readonly WebView2PermissionAdapter _permissions = new(new DefaultPermissionPolicy());
     private readonly TabLifecycleManager _lifecycle = new();
     private readonly NewtonDataStore _dataStore = new();
     private readonly DispatcherTimer _recoveryTimer = new() { Interval = TimeSpan.FromSeconds(15) };
@@ -79,7 +81,7 @@ public partial class MainWindow : Window
         var snapshot = _profile.Workspaces.SelectMany((workspace, wi) => workspace.Tabs.Select((tab, ti) =>
             new RecoveryTab(wi, workspace.Name, ti,
                 _renderers.TryGet(tab, out var view) ? view.CoreWebView2?.Source ?? view.Source?.AbsoluteUri ?? tab.Url.AbsoluteUri : tab.Url.AbsoluteUri,
-                tab.Title, tab.GroupId.Value)));
+                tab.Title, tab.GroupId.Value, 2, workspace.Id.Value.ToString("N"), tab.Id.Value.ToString("N"))));
         _dataStore.SaveRecoverySnapshot(snapshot, cleanShutdown);
     }
 
@@ -109,7 +111,7 @@ public partial class MainWindow : Window
         return tab;
     }
 
-    private static void Harden(CoreWebView2 core)
+    private void Harden(CoreWebView2 core)
     {
         core.Settings.IsStatusBarEnabled = false;
         core.Settings.AreDevToolsEnabled = true;
@@ -118,16 +120,15 @@ public partial class MainWindow : Window
         core.Settings.IsGeneralAutofillEnabled = false;
         core.Settings.IsWebMessageEnabled = false;
         core.Settings.IsReputationCheckingRequired = true;
-        core.PermissionRequested += HandlePermissionRequest;
+        _permissions.Attach(core, _profile.IsPrivate, AskPermission);
         core.ServerCertificateErrorDetected += (_, e) => e.Action = CoreWebView2ServerCertificateErrorAction.Cancel;
     }
 
-    private static void HandlePermissionRequest(object? sender, CoreWebView2PermissionRequestedEventArgs e)
+    private static bool AskPermission(PermissionPrompt prompt)
     {
-        var origin = Uri.TryCreate(e.Uri, UriKind.Absolute, out var uri) ? uri.GetLeftPart(UriPartial.Authority) : "This page";
-        var result = MessageBox.Show($"{origin} is requesting access to {e.PermissionKind}.\n\nAllow this request once?", "Newton site permission", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
-        e.State = result == MessageBoxResult.Yes ? CoreWebView2PermissionState.Allow : CoreWebView2PermissionState.Deny;
-        e.SavesInProfile = false;
+        var origin = prompt.Origin.GetLeftPart(UriPartial.Authority);
+        return MessageBox.Show($"{origin} is requesting access to {prompt.Permission}.\n\nAllow this request once?",
+            "Newton site permission", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
     }
 
     private Task<CoreWebView2Environment> GetEnvironmentAsync() => _environmentTask ??= CoreWebView2Environment.CreateAsync(null,
@@ -177,7 +178,11 @@ public partial class MainWindow : Window
     private void Navigate()
     {
         if (CurrentView is not { } view) return;
-        if (NavigationService.TryResolveAddress(AddressBox.Text, out var destination) && destination is not null) { view.Source = destination; return; }
+        if (NavigationService.TryResolveAddress(AddressBox.Text, out var destination) && destination is not null)
+        {
+            var decision = NavigationService.Evaluate(destination);
+            if (decision.IsAllowed && !decision.RequiresExternalLaunch) { view.Source = destination; return; }
+        }
         MessageBox.Show("Enter a valid website address here. Use the separate search box to search the web.", "Invalid web address", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
