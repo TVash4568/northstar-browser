@@ -22,11 +22,9 @@ public static class InternalPageService
             _ => string.Empty
         };
         if (body.Length == 0) { html = string.Empty; return false; }
-        html = $"""
-            <!doctype html><meta charset="utf-8"><title>Newton {WebUtility.HtmlEncode(name)}</title>
-            <style>body{{font:15px system-ui;background:#f8fafc;color:#0f172a;margin:48px;max-width:900px}}h1{{font-size:30px}}table{{width:100%;border-collapse:collapse;background:white}}th,td{{padding:12px;border-bottom:1px solid #e2e8f0;text-align:left}}th{{width:220px;color:#475569}}code{{overflow-wrap:anywhere}}</style>
-            <h1>Newton / {WebUtility.HtmlEncode(name)}</h1><table>{body}</table>
-            """;
+        html = $"<!doctype html><meta charset=\"utf-8\"><title>Newton {WebUtility.HtmlEncode(name)}</title>" +
+            "<style>body{font:15px system-ui;background:#f8fafc;color:#0f172a;margin:48px;max-width:900px}h1{font-size:30px}table{width:100%;border-collapse:collapse;background:white}th,td{padding:12px;border-bottom:1px solid #e2e8f0;text-align:left}th{width:220px;color:#475569}code{overflow-wrap:anywhere}</style>" +
+            $"<h1>Newton / {WebUtility.HtmlEncode(name)}</h1><table>{body}</table>";
         return true;
     }
 
