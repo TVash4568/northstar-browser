@@ -14,5 +14,6 @@
 | ADR-010 | macOS/Linux work follows Windows quality gates | Accepted | No premature cross-platform production promise |
 | ADR-011 | AI processing, context and actions use three separate contracts | Accepted | A model provider cannot grant itself data access or browser authority |
 | ADR-012 | Newton 1.0 keeps extensions disabled | Accepted | Resolves the reports' conflict: v1 does not promise extension compatibility; future support must enforce least privilege |
+| ADR-013 | Free browser core with optional Newton Pro services | Accepted | Essential security remains free; paid value comes from encrypted sync, backup, advanced organisation and optional AI |
 
 New ADRs must record context, decision, alternatives, security/privacy impact, migration impact and reversal cost.
