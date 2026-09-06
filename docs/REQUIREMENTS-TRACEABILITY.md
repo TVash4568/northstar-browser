@@ -20,5 +20,8 @@ Status values are `Planned`, `In progress`, `Implemented` and `Verified`. Implem
 | NEW-ACC-001 | Primary workflows pass keyboard, screen-reader, contrast and 200% scaling tests | 1.0 | Planned | Manual and automated evidence required |
 | NEW-EXT-001 | Extension support has explicit compatibility and trust levels | Post-1.0 | Planned | Deliberately deferred |
 | NEW-AI-001 | AI is disabled by default and context sharing is explicit | Post-1.0 | Implemented architecture only | Provider/context contracts and policy; no AI UI/provider shipped |
+| NEW-AI-002 | AI action authority is separate and uses short-lived scoped grants | Post-1.0 | Implemented architecture only | `IAIActionProvider` and `ActionPermissionValidator`; no action provider shipped |
+| NEW-DIAG-001 | Internal version, policy, diagnostic, performance and crash pages | 1.0 | Implemented | `newton://version`, `newton://policy`, `newton://diagnostics`, `newton://performance`, `newton://crashes` |
+| NEW-SEC-004 | CI prevents accidental weakening of key WebView2 controls | 1.0 | Verified | Security-invariant architecture check in Windows release workflow |
 
 This matrix is deliberately conservative. A successful build does not verify accessibility, compatibility, security or performance claims.
