@@ -47,6 +47,7 @@ public sealed class TabModel(TabId id, WorkspaceId workspaceId, Uri url)
     public DateTimeOffset LastActive { get; set; } = DateTimeOffset.UtcNow;
     public TabState State { get; set; } = TabState.Active;
     public EngineInstanceId? EngineInstanceId { get; set; }
+    public string? LastRendererFailure { get; set; }
     public string DisplayTitle => $"{GroupId.Value}  ·  {(Title.Length > 22 ? Title[..22] + "…" : Title)}";
     public override string ToString() => DisplayTitle;
 }
