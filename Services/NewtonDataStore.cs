@@ -5,7 +5,7 @@ namespace NorthstarBrowser.Services;
 
 public sealed class NewtonDataStore : IDisposable
 {
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 3;
     private readonly SqliteConnection _connection;
     private readonly string _databasePath;
     public bool WasPreviousShutdownClean { get; private set; } = true;
@@ -54,6 +54,19 @@ public sealed class NewtonDataStore : IDisposable
                 PRAGMA user_version=2;
                 """, transaction);
             transaction.Commit();
+            version = 2;
+        }
+
+        if (version < 3)
+        {
+            using var transaction = _connection.BeginTransaction();
+            Execute("""
+                ALTER TABLE recovery_tabs ADD COLUMN snapshot_version INTEGER NOT NULL DEFAULT 1;
+                ALTER TABLE recovery_tabs ADD COLUMN workspace_id TEXT NOT NULL DEFAULT '';
+                ALTER TABLE recovery_tabs ADD COLUMN tab_id TEXT NOT NULL DEFAULT '';
+                PRAGMA user_version=3;
+                """, transaction);
+            transaction.Commit();
         }
 
         var clean = Scalar("SELECT value FROM app_state WHERE key='clean_shutdown';")?.ToString();
@@ -73,10 +86,21 @@ public sealed class NewtonDataStore : IDisposable
     {
         var result = new List<RecoveryTab>();
         using var command = _connection.CreateCommand();
-        command.CommandText = "SELECT workspace_position, workspace_name, tab_position, url, title, group_name FROM recovery_tabs ORDER BY workspace_position, tab_position;";
+        command.CommandText = "SELECT workspace_position, workspace_name, tab_position, url, title, group_name, snapshot_version, workspace_id, tab_id FROM recovery_tabs ORDER BY workspace_position, tab_position;";
         using var reader = command.ExecuteReader();
         while (reader.Read())
-            result.Add(new RecoveryTab(reader.GetInt32(0), reader.GetString(1), reader.GetInt32(2), reader.GetString(3), reader.GetString(4), reader.GetString(5)));
+        {
+            var url = reader.IsDBNull(3) ? null : reader.GetString(3);
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var parsed) || parsed.Scheme is not ("http" or "https" or "file")) continue;
+            var group = reader.IsDBNull(5) ? "General" : reader.GetString(5);
+            if (string.IsNullOrWhiteSpace(group)) group = "General";
+            result.Add(new RecoveryTab(
+                Math.Max(0, reader.GetInt32(0)),
+                reader.IsDBNull(1) || string.IsNullOrWhiteSpace(reader.GetString(1)) ? "Recovered" : reader.GetString(1),
+                Math.Max(0, reader.GetInt32(2)), parsed.AbsoluteUri,
+                reader.IsDBNull(4) ? "Recovered page" : reader.GetString(4), group,
+                reader.GetInt32(6), reader.GetString(7), reader.GetString(8)));
+        }
         return result;
     }
 
@@ -88,13 +112,15 @@ public sealed class NewtonDataStore : IDisposable
         {
             using var command = _connection.CreateCommand();
             command.Transaction = transaction;
-            command.CommandText = "INSERT INTO recovery_tabs(workspace_position,workspace_name,tab_position,url,title,group_name) VALUES($wp,$wn,$tp,$url,$title,$group);";
+            command.CommandText = "INSERT INTO recovery_tabs(workspace_position,workspace_name,tab_position,url,title,group_name,snapshot_version,workspace_id,tab_id) VALUES($wp,$wn,$tp,$url,$title,$group,2,$wid,$tid);";
             command.Parameters.AddWithValue("$wp", tab.WorkspacePosition);
             command.Parameters.AddWithValue("$wn", tab.WorkspaceName);
             command.Parameters.AddWithValue("$tp", tab.TabPosition);
             command.Parameters.AddWithValue("$url", tab.Url);
             command.Parameters.AddWithValue("$title", tab.Title);
             command.Parameters.AddWithValue("$group", tab.Group);
+            command.Parameters.AddWithValue("$wid", tab.WorkspaceId);
+            command.Parameters.AddWithValue("$tid", tab.TabId);
             command.ExecuteNonQuery();
         }
         SetState("clean_shutdown", cleanShutdown ? "1" : "0", transaction);
@@ -116,4 +142,6 @@ public sealed class NewtonDataStore : IDisposable
     public void Dispose() => _connection.Dispose();
 }
 
-public sealed record RecoveryTab(int WorkspacePosition, string WorkspaceName, int TabPosition, string Url, string Title, string Group);
+public sealed record RecoveryTab(
+    int WorkspacePosition, string WorkspaceName, int TabPosition, string Url, string Title, string Group,
+    int SnapshotVersion = 2, string WorkspaceId = "", string TabId = "");
