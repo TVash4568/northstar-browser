@@ -5,6 +5,8 @@ namespace NorthstarBrowser.Windows.WebView2;
 
 public sealed class WebView2ContentFilterAdapter(IContentFilter filter, PrivacyLevel level = PrivacyLevel.Strict)
 {
+    public PrivacyLevel Level => level;
+    public PrivacyRulesetMetadata Ruleset => filter.Metadata;
     public async Task ApplyAsync(CoreWebView2 core)
     {
         core.Profile.PreferredTrackingPreventionLevel = level switch
