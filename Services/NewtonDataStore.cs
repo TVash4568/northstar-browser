@@ -7,13 +7,15 @@ public sealed class NewtonDataStore : IDisposable
 {
     public const int CurrentSchemaVersion = 2;
     private readonly SqliteConnection _connection;
+    private readonly string _databasePath;
     public bool WasPreviousShutdownClean { get; private set; } = true;
 
     public NewtonDataStore()
     {
         var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Newton", "Data");
         Directory.CreateDirectory(directory);
-        _connection = new SqliteConnection($"Data Source={Path.Combine(directory, "newton.db")};Mode=ReadWriteCreate");
+        _databasePath = Path.Combine(directory, "newton.db");
+        _connection = new SqliteConnection($"Data Source={_databasePath};Mode=ReadWriteCreate");
     }
 
     public void Initialise()
@@ -23,6 +25,8 @@ public sealed class NewtonDataStore : IDisposable
         var version = Convert.ToInt32(Scalar("PRAGMA user_version;") ?? 0);
         if (version > CurrentSchemaVersion)
             throw new InvalidOperationException($"Newton data schema {version} is newer than this application supports.");
+
+        if (version > 0 && version < CurrentSchemaVersion) CreatePreMigrationBackup(version);
 
         if (version < 1)
         {
@@ -55,6 +59,14 @@ public sealed class NewtonDataStore : IDisposable
         var clean = Scalar("SELECT value FROM app_state WHERE key='clean_shutdown';")?.ToString();
         WasPreviousShutdownClean = clean is null or "1";
         SetState("clean_shutdown", "0");
+    }
+
+    private void CreatePreMigrationBackup(int sourceVersion)
+    {
+        var backupPath = $"{_databasePath}.pre-migration-v{sourceVersion}.bak";
+        using var backup = new SqliteConnection($"Data Source={backupPath};Mode=ReadWriteCreate");
+        backup.Open();
+        _connection.BackupDatabase(backup);
     }
 
     public IReadOnlyList<RecoveryTab> LoadRecoveryTabs()
