@@ -6,12 +6,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
-using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Win32;
 using Newton.Core.Domain;
 using Newton.Core.Privacy;
 using NorthstarBrowser.Services;
 using NorthstarBrowser.Windows.WebView2;
+using WebViewControl = Microsoft.Web.WebView2.Wpf.WebView2;
 
 namespace NorthstarBrowser;
 
@@ -32,7 +32,7 @@ public partial class MainWindow : Window
     private bool _darkTheme;
     private WorkspaceModel? CurrentSession => SessionList.SelectedItem as WorkspaceModel;
     private TabModel? CurrentTab => TabStrip.SelectedItem as TabModel;
-    private WebView2? CurrentView => CurrentTab is { } tab && _renderers.TryGet(tab, out var view) ? view : null;
+    private WebViewControl? CurrentView => CurrentTab is { } tab && _renderers.TryGet(tab, out var view) ? view : null;
 
     public MainWindow()
     {
@@ -134,7 +134,7 @@ public partial class MainWindow : Window
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Newton", "Profiles", _profile.Id.ToString(), "WebView2"),
         new CoreWebView2EnvironmentOptions { AreBrowserExtensionsEnabled = false });
 
-    private void WireEvents(TabModel tab, WebView2 view)
+    private void WireEvents(TabModel tab, WebViewControl view)
     {
         var core = view.CoreWebView2;
         core.DocumentTitleChanged += (_, _) => Dispatcher.Invoke(() => { tab.Title = string.IsNullOrWhiteSpace(core.DocumentTitle) ? "New page" : core.DocumentTitle; TabStrip.Items.Refresh(); Title = $"{tab.Title} — Newton Alpha"; });
@@ -156,7 +156,7 @@ public partial class MainWindow : Window
     }
 
     private void RefreshTabs(WorkspaceModel workspace) { TabStrip.ItemsSource = workspace.Tabs; TabStrip.Items.Refresh(); WorkspaceTitle.Text = workspace.Name.ToUpperInvariant(); }
-    private void ShowPrimary(WebView2 view) { PrimaryHost.Children.Clear(); PrimaryHost.Children.Add(view); }
+    private void ShowPrimary(WebViewControl view) { PrimaryHost.Children.Clear(); PrimaryHost.Children.Add(view); }
     private async void NewSession_Click(object sender, RoutedEventArgs e) => await CreateSessionAsync($"Session {_profile.Workspaces.Count + 1}");
     private async void NewTab_Click(object sender, RoutedEventArgs e) { if (CurrentSession is { } workspace) await CreateTabAsync(workspace, new Uri("https://duckduckgo.com")); }
     private void Back_Click(object sender, RoutedEventArgs e) { if (CurrentView?.CanGoBack == true) CurrentView.GoBack(); }
