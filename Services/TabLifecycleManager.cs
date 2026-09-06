@@ -1,19 +1,19 @@
-using NorthstarBrowser.Models;
+using Newton.Core.Domain;
 
 namespace NorthstarBrowser.Services;
 
 public sealed class TabLifecycleManager
 {
-    public async ValueTask ActivateAsync(BrowserTab active, BrowserTab? previous, BrowserTab? protectedTab)
+    public TabModel? Activate(TabModel active, TabModel? previous, TabModel? protectedTab)
     {
-        if (previous is not null && previous != active && previous != protectedTab && previous.View.CoreWebView2 is not null)
+        TabModel? suspend = null;
+        if (previous is not null && previous != active && previous != protectedTab)
         {
-            await previous.View.CoreWebView2.TrySuspendAsync();
-            previous.LifecycleState = TabLifecycleState.Suspended;
+            previous.State = TabState.Sleeping;
+            suspend = previous;
         }
-
-        if (active.View.CoreWebView2 is { IsSuspended: true } core) core.Resume();
-        active.LifecycleState = TabLifecycleState.Active;
-        active.LastActivatedUtc = DateTimeOffset.UtcNow;
+        active.State = TabState.Active;
+        active.LastActive = DateTimeOffset.UtcNow;
+        return suspend;
     }
 }
