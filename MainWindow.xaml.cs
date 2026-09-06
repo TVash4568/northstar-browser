@@ -139,21 +139,27 @@ public partial class MainWindow : Window
     {
         var core = view.CoreWebView2;
         core.DocumentTitleChanged += (_, _) => Dispatcher.Invoke(() => { tab.Title = string.IsNullOrWhiteSpace(core.DocumentTitle) ? "New page" : core.DocumentTitle; TabStrip.Items.Refresh(); Title = $"{tab.Title} — Newton Alpha"; });
-        core.SourceChanged += (_, _) => Dispatcher.Invoke(() => { if (Uri.TryCreate(core.Source, UriKind.Absolute, out var source)) tab.Url = source; UpdateChrome(); });
+        core.SourceChanged += (_, _) => Dispatcher.Invoke(() =>
+        {
+            if (!(core.Source == "about:blank" && tab.Url.Scheme == "newton") && Uri.TryCreate(core.Source, UriKind.Absolute, out var source)) tab.Url = source;
+            UpdateChrome();
+        });
         core.HistoryChanged += (_, _) => Dispatcher.Invoke(UpdateChrome);
-        core.ProcessFailed += (_, _) => Dispatcher.Invoke(() => tab.State = TabState.Crashed);
+        core.ProcessFailed += (_, e) => Dispatcher.Invoke(() => { tab.State = TabState.Crashed; tab.LastRendererFailure = e.ProcessFailedKind.ToString(); });
         core.NewWindowRequested += (_, e) => Dispatcher.InvokeAsync(async () => { e.Handled = true; if (CurrentSession is not null && Uri.TryCreate(e.Uri, UriKind.Absolute, out var uri)) await CreateTabAsync(CurrentSession, uri); });
     }
 
     private void UpdateChrome()
     {
         if (CurrentView?.CoreWebView2 is not { } core) return;
-        AddressBox.Text = core.Source;
+        var displayedSource = CurrentTab?.Url.Scheme == "newton" ? CurrentTab.Url.AbsoluteUri : core.Source;
+        AddressBox.Text = displayedSource;
         BackButton.IsEnabled = core.CanGoBack;
         ForwardButton.IsEnabled = core.CanGoForward;
-        var secure = core.Source.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
-        SecurityGlyph.Text = secure ? "●" : "!";
-        SecurityGlyph.Foreground = secure ? System.Windows.Media.Brushes.SeaGreen : System.Windows.Media.Brushes.DarkOrange;
+        var secure = displayedSource.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+        var internalPage = displayedSource.StartsWith("newton://", StringComparison.OrdinalIgnoreCase);
+        SecurityGlyph.Text = secure ? "●" : internalPage ? "N" : "!";
+        SecurityGlyph.Foreground = secure || internalPage ? System.Windows.Media.Brushes.SeaGreen : System.Windows.Media.Brushes.DarkOrange;
     }
 
     private void RefreshTabs(WorkspaceModel workspace) { TabStrip.ItemsSource = workspace.Tabs; TabStrip.Items.Refresh(); WorkspaceTitle.Text = workspace.Name.ToUpperInvariant(); }
@@ -181,6 +187,13 @@ public partial class MainWindow : Window
         if (NavigationService.TryResolveAddress(AddressBox.Text, out var destination) && destination is not null)
         {
             var decision = NavigationService.Evaluate(destination);
+            if (destination.Scheme == "newton" && InternalPageService.TryRender(destination, _privacy.Level, _privacy.Ruleset, out var html))
+            {
+                if (CurrentTab is { } tab) tab.Url = destination;
+                view.NavigateToString(html);
+                AddressBox.Text = destination.AbsoluteUri;
+                return;
+            }
             if (decision.IsAllowed && !decision.RequiresExternalLaunch) { view.Source = destination; return; }
         }
         MessageBox.Show("Enter a valid website address here. Use the separate search box to search the web.", "Invalid web address", MessageBoxButton.OK, MessageBoxImage.Information);
