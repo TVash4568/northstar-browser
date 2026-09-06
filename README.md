@@ -47,6 +47,7 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 - Picture-in-Picture for compatible page videos
 - PNG capture of the visible browser viewport
 - Chromium/WebView2 developer tools via F12 or Ctrl+Shift+I
+- Internal `newton://version`, `newton://policy`, `newton://diagnostics`, `newton://performance` and `newton://crashes` pages
 - Cryptographically secure 20-character password generation without storage
 - Reproducible Windows release workflow and Inno Setup installer
 
@@ -57,6 +58,7 @@ The incremental cross-platform boundary and proposed project split are documente
 Engineering governance is tracked in `docs/REQUIREMENTS-TRACEABILITY.md`, `docs/ADR-REGISTER.md`, `docs/NEWTON-1.0-SCOPE.md`, `docs/THREAT-MODEL.md` and `docs/RELEASE-POLICY.md`.
 
 AI is a separate optional subsystem, disabled by default. See `AI_POLICY.md` for provider independence and explicit page-context rules.
+The architecture now separates AI processing, context disclosure and browser-action authority. No AI provider or agentic action implementation is enabled in this build.
 
 ## Important security status
 
