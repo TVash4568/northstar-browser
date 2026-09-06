@@ -1,5 +1,5 @@
 #define AppName "Newton Browser Alpha"
-#define AppVersion "0.1.0"
+#define AppVersion "0.2.0"
 #define AppPublisher "Newton Open Source Project"
 #define AppExeName "Newton.exe"
 
@@ -11,7 +11,7 @@ AppPublisher={#AppPublisher}
 DefaultDirName={autopf}\Newton Browser
 DefaultGroupName={#AppName}
 OutputDir=..\artifacts
-OutputBaseFilename=NewtonBrowser-0.1.0-win-x64-setup
+OutputBaseFilename=NewtonBrowser-0.2.0-win-x64-setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
