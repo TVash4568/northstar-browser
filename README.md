@@ -14,6 +14,8 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 - HTTPS status indicator
 - Invalid-certificate cancellation
 - Website permissions require a fresh, origin-labelled decision and are denied when refused
+- Central permission policy separated from the WebView2 event adapter
+- Explicit navigation policy blocks JavaScript and direct embedded-data schemes
 - Password saving and form autofill disabled
 - New-window requests contained in a new browser page
 - No application telemetry
@@ -29,6 +31,8 @@ Its engine architecture—Blink rendering, V8 JavaScript, GPU compositing, multi
 - Named workspaces using the Session Canvas rail
 - Fundamental profile → workspace → tab-group → tab ownership model
 - Versioned SQLite storage for Newton-owned history, bookmarks, profiles, workspaces and recovery state
+- Schema-v3 recovery records with stable tab/workspace identifiers and malformed-record tolerance
+- Automatic database backup before schema migration
 - Periodic crash-recovery snapshots with clean-shutdown detection
 - First-class tab lifecycle subsystem
 - Vertical page list with visible tab-group labels
@@ -50,11 +54,13 @@ See `COMPATIBILITY.md` for the web-platform matrix and `ENTERPRISE.md` for the e
 
 The incremental cross-platform boundary and proposed project split are documented in `TARGET_STRUCTURE.md`.
 
+Engineering governance is tracked in `docs/REQUIREMENTS-TRACEABILITY.md`, `docs/ADR-REGISTER.md`, `docs/NEWTON-1.0-SCOPE.md`, `docs/THREAT-MODEL.md` and `docs/RELEASE-POLICY.md`.
+
 AI is a separate optional subsystem, disabled by default. See `AI_POLICY.md` for provider independence and explicit page-context rules.
 
 ## Important security status
 
-This is pre-release software. It has not undergone independent security review. The bundled blocklist is intentionally small in the first alpha; automatic list updates, per-site exceptions, signed automatic application updates, private sessions, downloads UI, history controls and accessibility testing remain incomplete. Fingerprinting protection is mitigation rather than anonymity because WebView2 controls the underlying engine. Engine updates are rapid through Evergreen WebView2, but Newton application updates are not yet automatic or signed. Do not use this alpha for banking, healthcare, passwords or other sensitive activity.
+This is pre-release software. It has not undergone independent security review. The bundled, versioned blocklist is intentionally small in the first alpha; signed ruleset updates, per-site exceptions, signed automatic application updates, private sessions, downloads UI, history controls and accessibility testing remain incomplete. Fingerprinting protection is mitigation rather than anonymity because WebView2 controls the underlying engine. Engine updates are rapid through Evergreen WebView2, but Newton application updates are not yet automatic or signed. Do not use this alpha for banking, healthcare, passwords or other sensitive activity.
 
 ## Build
 
