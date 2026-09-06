@@ -22,6 +22,9 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
+      - name: Check architecture boundaries
+        shell: pwsh
+        run: ./scripts/check-architecture.ps1
       - name: Restore
         run: dotnet restore NorthstarBrowser.csproj
       - name: Publish
