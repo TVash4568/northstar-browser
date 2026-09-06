@@ -16,8 +16,11 @@
 
 - macOS, Linux and mobile production releases
 - Chromium fork, extension marketplace and full Chrome-extension compatibility
-- Cloud sync ecosystem, VPN, AI agents and proprietary search
+- Encrypted cloud synchronisation and Newton Pro account services
+- VPN, AI agents and proprietary search
 - Email, calendar, wallet or advertising products
+
+Encrypted synchronisation is a planned post-v1 Newton Pro service, not a Newton 1.0 requirement. Its implementation must not weaken or delay the free browser's security baseline.
 
 ## Definition of Done
 
